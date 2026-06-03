@@ -12,6 +12,7 @@ import {
   FiBriefcase,
   FiTruck,
 } from "react-icons/fi";
+import { submitQuoteRequest } from "../api";
 
 const initialFormData = {
   fullName: "",
@@ -159,22 +160,32 @@ const CTA = () => {
     return true;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitQuoteRequest(formData);
+
       setFormStatus({
         type: "success",
-        message:
+        message: 
           "Your quote request has been received. We'll follow up with you shortly.",
       });
+
       setFormData(initialFormData);
-    }, 900);
+    } catch (error) {
+      setFormStatus({
+        type: "error",
+        message:
+          error.message || "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
